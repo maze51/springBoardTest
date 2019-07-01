@@ -3,13 +3,19 @@
   PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-
+	
 	<typeAliases>
+		<typeAlias alias="boardVO" type="kr.or.ddit.board.model.BoardVO"/>
+		<typeAlias alias="articleVO" type="kr.or.ddit.board.model.ArticleVO"/>
+		<typeAlias alias="appendVO" type="kr.or.ddit.board.model.AppendVO"/>
+		<typeAlias alias="replyVO" type="kr.or.ddit.board.model.ReplyVO"/>
 		<typeAlias alias="userVo" type="kr.or.ddit.user.model.UserVo" />
 		<typeAlias alias="pageVo" type="kr.or.ddit.paging.model.PageVo"/>
 	</typeAliases>
 	
 	<mappers>
+		<mapper resource="kr/or/ddit/config/mybatis/mapper/board.xml" />
 		<mapper resource="kr/or/ddit/config/mybatis/mapper/user.xml" />
 	</mappers>
+	
 </configuration>
