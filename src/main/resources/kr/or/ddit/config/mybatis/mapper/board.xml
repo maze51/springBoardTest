@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board">
+	
+	<!-- 게시판 ****************************************************-->
+	
+	<!-- 전체 게시판 목록 출력 -->
+	<select id="showBoardList" resultType="boardVO">
+		select /*+ INDEX(BOARD PK_BOARD)*/ *
+		from BOARD
+		order by BOARD_REG
+	</select>
+	
+	<!-- 신규 게시판 생성 -->
+	<insert id="createBoard" parameterType="map">
+		insert into BOARD
+		values('b' || to_char(boardtest_seq.nextval), #{userId}, #{boardName}, #{useSelect}, SYSDATE)
+	</insert>
+	
+	<!-- 게시판 수정 -->
+	<update id="modifyBoard" parameterType="map">
+		update BOARD
+		set BOARD_NAME = #{boardName}
+			,BOARD_USE = #{useSelect}
+		where BOARD_ID = #{boardId}
+	</update>
+	
+	<!-- 게시판 아이디에 해당하는 게시판 이름 확인 -->
+	<select id="readBoardName" parameterType="string" resultType="string">
+		select BOARD_NAME from BOARD
+		where BOARD_ID = #{board_id}
+	</select>
+	
+	<!-- 게시글 ****************************************************-->
+	
+	<!-- 한 게시판의 전체 게시글 목록 출력 -->
+	<select id="selectAllArticle" parameterType="string" resultType="articleVO">
+		select *
+		from ARTICLE
+		where ARTICLE_BOARD = #{article_board}
+	</select>
+	
+	<!-- 한 게시판의 전체 게시글수 조회 -->
+	<select id="boardCnt" parameterType="string" resultType="int">
+		select count(*) from ARTICLE
+		where ARTICLE_BOARD = #{article_board}
+	</select>
+	
+	<!-- 게시글 페이징 리스트 조회 -->
+	<select id="articlePagingList" parameterType="map" resultType="articleVO">
+	<![CDATA[
+		select b.*
+		from
+		(select a.*, rownum rn
+		from
+		(select article.ARTICLE_NUMBER, article.ARTICLE_TITLE, article.ARTICLE_USER, article.ARTICLE_DATE, article.ARTICLE_USE, level lv
+		from ARTICLE article
+		where ARTICLE_BOARD = #{boardId}
+		start with ARTICLE_PID is null
+		connect by prior ARTICLE_NUMBER = ARTICLE_PID
+		order siblings by ARTICLE_GROUP desc, ARTICLE_NUMBER) a) b
+		where b.rn >= (#{page}-1)*#{pageSize} + 1 and b.rn <= #{page}*#{pageSize}
+		]]>
+	</select>
+	
+	<!-- 개별 게시글 확인 -->
+	<select id="readArticle" parameterType="int" resultType="articleVO">
+		select *
+		from ARTICLE
+		where ARTICLE_NUMBER = #{article_number}
+	</select>
+	
+	<!-- 다음 게시글 번호 확인 -->
+	<select id="getNextArticleNumber" resultType="int">
+		select article_seq.nextval from DUAL
+	</select>
+	
+	<!-- 새 게시글 작성 -->
+	<insert id="writeArticle" parameterType="articleVO">
+		insert into ARTICLE
+			(ARTICLE_NUMBER
+			,ARTICLE_USER
+			,ARTICLE_BOARD
+			<if test="article_pid != 0">
+			,ARTICLE_PID
+			</if>
+			,ARTICLE_TITLE
+			,ARTICLE_CONTENT
+			,ARTICLE_DATE
+			,ARTICLE_USE
+			,ARTICLE_GROUP
+			)
+		values(	  
+				#{article_number}
+				, #{article_user}
+				, #{article_board}
+				<if test="article_pid != 0">
+				, #{article_pid}
+				</if>
+				, #{article_title}
+				, #{article_content}
+				, SYSDATE
+				, '1'
+				, #{article_group}
+				)
+	</insert>
+	
+	<!-- 특정 게시글 삭제 -->
+	<update id="deleteArticle" parameterType="int">
+		update ARTICLE
+		set ARTICLE_USE = '0'
+		where ARTICLE_NUMBER = #{article_number}
+	</update>
+	
+	<!-- 특정 게시글 수정 -->
+	<update id="modifyArticle" parameterType="articleVO">
+		update ARTICLE
+		set  ARTICLE_TITLE= #{article_title}
+			,ARTICLE_CONTENT= #{article_content}
+		where ARTICLE_NUMBER = #{article_number}
+	</update>
+	
+	<!-- 댓글 ****************************************************-->
+	
+	<!-- 게시글에 해당하는 댓글 확인 -->
+	<select id="readReply" parameterType="int" resultType="replyVO">
+		select *
+		from REPLY
+		where REPLY_ARTICLE = #{reply_article}
+	</select>
+	
+	<!-- 새 댓글 작성 -->
+	<insert id="writeReply" parameterType="replyVO">
+		insert into REPLY
+		values('r' || to_char(reply_seq.nextval)
+			   ,#{reply_user}
+			   ,#{reply_article}
+			   ,#{reply_content}
+			   ,SYSDATE
+			   ,1)
+	</insert>
+	
+	<!-- 특정 댓글 삭제 -->
+	<update id="deleteReply" parameterType="string">
+		update REPLY
+		set REPLY_USE = '0'
+		where REPLY_ID = #{reply_id}
+	</update>
+	
+	<!-- 첨부파일 ****************************************************-->
+	
+	<!-- 첨부파일 서버에 저장 -->
+	<insert id="insertAppend" parameterType="appendVO">
+		insert into APPEND
+		values('a' || to_char(append_seq.nextval)
+				, #{append_article}
+				, #{append_path}
+				, #{append_filename})
+	</insert>
+	
+	<!-- 첨부파일 확인 -->
+	<select id="readAppend" parameterType="int" resultType="appendVO">
+		select *
+		from APPEND
+		where APPEND_ARTICLE = #{append_article}
+	</select>
+	
+	<!-- 다운로드할 파일 정보 확인 -->
+	<select id="getDownloadFile" parameterType="string" resultType="appendVO">
+		select *
+		from APPEND
+		where APPEND_ID = #{append_id}
+	</select>
+	
+	<!-- 첨부파일 삭제 -->
+	<delete id="deleteAppend" parameterType="string">
+		delete
+		from APPEND
+		where APPEND_ID = #{append_id}
+	</delete>
+	
+</mapper>

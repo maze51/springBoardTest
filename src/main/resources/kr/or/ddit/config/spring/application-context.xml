@@ -25,26 +25,12 @@
 	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/"/> <!-- 접두 -->
 		<property name="suffix" value=".jsp"/> <!-- 접미 -->
-		<property name="order" value="3"/>
+		<property name="order" value="2"/>
 	</bean>
 	
 	<!-- controller에서 리턴하는 view 이름과 동일한 spring bean이 존재하면 해당 view에 위임한다 -->
 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
-		<property name="order" value="2"/>
-	</bean>
-	
-	<!-- tiles view resolver -->
-	<bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
-		<property name="definitions">
-			<list>
-				<value>classpath:kr/or/ddit/config/tiles/tiles-config.xml</value>
-			</list>
-		</property>
-	</bean>
-	
-	<bean class="org.springframework.web.servlet.view.tiles3.TilesViewResolver">
 		<property name="order" value="1"/>
-		<property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
 	</bean>
 	
 	<!-- 
@@ -73,16 +59,6 @@
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSizePerFile" value="3145728"/>
 		<property name="maxUploadSize" value="15728640"/>
-	</bean>
-	
-	<!-- messageSource -->
-	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-		<property name="basenames">
-			<list>
-				<value>classpath:kr/or/ddit/msg/error</value> <!-- 만든 property 위치를 지정 -->
-				<value>classpath:kr/or/ddit/msg/msg</value> <!-- 이렇게만 써도 알아서 커버된다 -->
-			</list>
-		</property>
 	</bean>
 	
 	<!-- localeResolver -->

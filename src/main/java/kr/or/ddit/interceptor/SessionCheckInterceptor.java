@@ -50,8 +50,8 @@ public class SessionCheckInterceptor extends HandlerInterceptorAdapter{
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		
-		logger.debug("##########################userDao : {}", userDao);
-		request.setAttribute("userList", userDao.userList());
+		//logger.debug("##########################userDao : {}", userDao);
+		//request.setAttribute("userList", userDao.userList());
 		
 	}
 	

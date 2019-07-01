@@ -29,6 +29,10 @@ public class UserVo {
 				+ addr1 + ", addr2=" + addr2 + ", zipcd=" + zipcd + ", birth=" + birth + ", path=" + path
 				+ ", filename=" + filename + "]";
 	}
+	
+	public UserVo(String userId) {
+		this.userId = userId;
+	}
 
 	public UserVo(String userId, String name, String alias, String pass, String addr1, String addr2, String zipcd,
 			Date birth) {
