@@ -161,10 +161,10 @@ public class BoardControllerTest extends ControllerTestEnv{
 		
 		/***When***/
 		mockMvc.perform(fileUpload("/writeArticle").file(file)
-				.param("boardId", "b2")
 				.param("title", "test제목")
 				.param("content", "test내용")
-				.sessionAttr("USER_INFO", new UserVo("cony")))
+				.sessionAttr("USER_INFO", new UserVo("cony"))
+				.sessionAttr("boardId", "b2"))
 			.andExpect(view().name("redirect:/showArticle"));
 		/***Then***/
 	}
@@ -289,12 +289,13 @@ public class BoardControllerTest extends ControllerTestEnv{
 		
 		/***When***/
 		mockMvc.perform(fileUpload("/writeReplyArticle").file(file)
-				.param("boardId", "b2")
 				.param("pId", "52")
 				.param("title", "제목")
 				.param("content", "내용내용")
 				.param("groupId", "52")
-				.sessionAttr("USER_INFO", new UserVo("cony")))
+				.sessionAttr("USER_INFO", new UserVo("cony"))
+				.sessionAttr("boardId", "b5")
+				)
 			.andExpect(view().name("redirect:/showArticle"));
 		/***Then***/
 	}

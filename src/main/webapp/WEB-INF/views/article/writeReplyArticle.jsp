@@ -127,7 +127,6 @@ function validation(){
 						</tr>
 					</table>
 					
-					<input type="hidden" name="boardId" value="${param.boardId}">
 					<input type="hidden" name="articleNumRA" value="${param.articleNumRA}">
 					<input type="hidden" name="groupId" value="${param.groupId}">
 					<input type="hidden" name="pId" value="${param.pId}">

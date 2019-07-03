@@ -135,6 +135,9 @@ public class BoardController {
 	public String showBoard(PageVo pageVo, String boardId, String boardName, Model model,
 			HttpSession session) {
 		
+		boardId = boardId == null ? (String) session.getAttribute("boardId") : boardId;
+		boardName = boardName == null ? (String) session.getAttribute("boardName") : boardName;
+		
 		Map<String, Object> searchMap = new HashMap<String, Object>();
 		searchMap.put("page", pageVo.getPage());
 		searchMap.put("pageSize", pageVo.getPageSize());
@@ -149,6 +152,7 @@ public class BoardController {
 		model.addAttribute("PageVo", pageVo);
 		
 		session.setAttribute("boardId", boardId);
+		session.setAttribute("boardName", boardName);
 		return "board/showBoard";
 	}
 	
@@ -191,7 +195,6 @@ public class BoardController {
 	* Method : writeArticle
 	* 작성자 : PC10
 	* 변경이력 :
-	* @param boardId
 	* @param title
 	* @param content
 	* @param session
@@ -201,11 +204,12 @@ public class BoardController {
 	* Method 설명 : 게시글 작성
 	 */
 	@RequestMapping(path = "/writeArticle", method = RequestMethod.POST)
-	public String writeArticle(String boardId, String title, String content, HttpSession session,
+	public String writeArticle(String title, String content, HttpSession session,
 								RedirectAttributes redirectAttributes, MultipartHttpServletRequest mtfRequest) {
 		
 		int articleNumber = boardService.getNextArticleNumber(); // 게시글 번호
 		UserVo userVo = (UserVo) session.getAttribute("USER_INFO");
+		String boardId = (String) session.getAttribute("boardId");
 		String userId = userVo.getUserId(); // 작성자
 		
 		ArticleVO articleVo = new ArticleVO(articleNumber, userId, boardId, title, content, articleNumber);
@@ -267,26 +271,16 @@ public class BoardController {
 	}
 	
 	/**
-	 * 
 	* Method : deleteArticle
 	* 작성자 : PC10
 	* 변경이력 :
 	* @param articleNum
-	* @param session
-	* @param redirectAttributes
 	* @return
 	* Method 설명 : 게시글 삭제
-	 */
+	*/
 	@RequestMapping("/deleteArticle")
-	public String deleteArticle(int articleNum, HttpSession session, RedirectAttributes redirectAttributes) {
+	public String deleteArticle(int articleNum) {
 		int deleteCnt = boardService.deleteArticle(articleNum);
-		String boardId = null;
-		String boardName = null;
-		if(deleteCnt == 1) {
-			boardId = (String) session.getAttribute("boardId");
-			boardName = boardService.readBoardName(boardId);
-		}
-		redirectAttributes.addAttribute("boardId", boardId).addAttribute("boardName", boardName);
 		return "redirect:/showBoard";
 	}
 	
@@ -328,7 +322,6 @@ public class BoardController {
         response.setHeader("Content-Description", "JSP Generated Data");
         
         if(!skip){
-            
         	orgFileName = new String(orgFileName.getBytes("utf-8"),"iso-8859-1");
  
             response.setHeader("Content-Disposition", "attachment; filename=\"" + orgFileName + "\"");
@@ -389,7 +382,6 @@ public class BoardController {
 	* 작성자 : PC10
 	* 변경이력 :
 	* @param groupId
-	* @param boardId
 	* @param pId
 	* @param title
 	* @param content
@@ -400,11 +392,11 @@ public class BoardController {
 	* Method 설명 : 답글 작성
 	 */
 	@RequestMapping(path = "/writeReplyArticle", method = RequestMethod.POST)
-	public String writeReplyArticle(int groupId, String boardId, int pId, 
-							String title, String content, HttpSession session,
+	public String writeReplyArticle(int groupId, int pId, String title, String content, HttpSession session,
 							MultipartHttpServletRequest mtfRequest, RedirectAttributes redirectAttributes) {
 		int articleNumber = boardService.getNextArticleNumber();
 		UserVo userVo = (UserVo) session.getAttribute("USER_INFO");
+		String boardId = (String) session.getAttribute("boardId");
 		String userId = userVo.getUserId(); // 작성자
 		
 		ArticleVO articleVo = new ArticleVO(articleNumber, userId, boardId, pId, title, content, groupId);
@@ -438,8 +430,8 @@ public class BoardController {
 		
 		int insertCnt = boardService.writeReply(replyVo);
 		
-		redirectAttributes.addAttribute("aNumber", aNum);
 		if(insertCnt==1) {
+			redirectAttributes.addAttribute("aNumber", aNum);
 			return "redirect:/showArticle";
 		}
 		return "redirect:/showArticle";
@@ -461,8 +453,8 @@ public class BoardController {
 		
 		int deleteCnt = boardService.deleteReply(replyId);
 		
-		redirectAttributes.addAttribute("aNumber", aNumber);
 		if(deleteCnt==1) {
+			redirectAttributes.addAttribute("aNumber", aNumber);
 			return "redirect:/showArticle";
 		}
 		return "redirect:/showArticle";

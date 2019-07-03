@@ -113,7 +113,6 @@
 				id="raform" method="get">
 				<input type="hidden" name="articleNumRA" value="${article.article_number}"/>
 				<input type="hidden" name="groupId" value="${article.article_group}"/>
-				<input type="hidden" name="boardId" value="${article.article_board}"/>
 				<input type="hidden" name="pId" value="${article.article_number}"/>
 			</form>
 			

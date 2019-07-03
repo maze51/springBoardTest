@@ -127,7 +127,6 @@ function validation(){
 						</tr>
 					</table>
 					
-					<input type="hidden" name="boardId" value="${param.boardId}">
 					<button type="button" id="savebutton" class="btn btn-lg btn-primary">저장</button>
 					
 				</form>
